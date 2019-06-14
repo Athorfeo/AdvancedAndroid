@@ -1,4 +1,4 @@
-package com.obcompany.advancedandroid.utility
+package com.obcompany.advancedandroid.repository.bound
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

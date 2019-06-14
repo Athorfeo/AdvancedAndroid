@@ -1,4 +1,4 @@
-package com.obcompany.advancedandroid.utility
+package com.obcompany.advancedandroid.repository.bound
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
@@ -8,7 +8,8 @@ import com.obcompany.advancedandroid.api.response.ApiErrorResponse
 import com.obcompany.advancedandroid.api.response.ApiResponse
 import com.obcompany.advancedandroid.api.response.ApiSuccessResponse
 import com.obcompany.advancedandroid.app.model.Resource
-import io.reactivex.Flowable
+import com.obcompany.advancedandroid.utility.RxUtil
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -19,9 +20,13 @@ abstract class NetworkBoundResource<T> {
 
     init {
         result.value = Resource.loading(null)
-        val apiResponse = callService()
+
+        /*val apiResponse = callService()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .toFlowable()*/
+
+        val apiResponse = RxUtil.execute(callService())
 
         result.addSource(LiveDataReactiveStreams.fromPublisher(apiResponse)){
             bindData(ApiResponse.create(it))
@@ -56,7 +61,7 @@ abstract class NetworkBoundResource<T> {
     fun asLiveData() = result as LiveData<Resource<T>>
     protected open fun processResponse(response: ApiSuccessResponse<T>) = response.body
     //protected abstract fun callService(): LiveData<ApiResponse<T>>
-    protected abstract fun callService(): Flowable<Response<T>>
+    protected abstract fun callService(): Single<Response<T>>
     protected abstract fun notifyDisposable(disposable: Disposable)
 
 }

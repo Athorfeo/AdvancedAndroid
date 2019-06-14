@@ -4,6 +4,7 @@ import com.obcompany.advancedandroid.app.model.User
 import com.obcompany.advancedandroid.utility.Constants
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -13,7 +14,7 @@ import retrofit2.http.Query
 
 interface API {
     @GET("/users")
-    fun getUsers() : Observable<Response<MutableList<User>>>
+    fun getUsers() : Single<Response<MutableList<User>>>
 
     companion object {
         fun create(): API{
