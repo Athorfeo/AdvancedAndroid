@@ -8,8 +8,8 @@ import com.obcompany.advancedandroid.repository.UserRepository
 
 object ViewModelFactoryUtil {
     fun provideMainViewModelFactory(context: Context): MainViewModelFactory {
-        val repository = UserRepository()
         val database = AppDatabase.getInstance(context)
+        val repository = UserRepository(database.userDao())
         return MainViewModelFactory(repository, database)
     }
 }

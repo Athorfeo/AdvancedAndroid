@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">App</string>
+    <string name="app_name">AdvancedAndroid</string>
     <!-- <string name="app_name">Prueba de Ingreso</string> -->
     <string name="edit_text_search">Buscar usuario</string>
     <string name="btn_view_posts">Ver publicaciones</string>
