@@ -1,5 +1,7 @@
 package com.obcompany.advancedandroid.repository.bound
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MediatorLiveData
@@ -8,7 +10,10 @@ import com.obcompany.advancedandroid.api.response.ApiErrorResponse
 import com.obcompany.advancedandroid.api.response.ApiResponse
 import com.obcompany.advancedandroid.api.response.ApiSuccessResponse
 import com.obcompany.advancedandroid.app.model.Resource
+import com.obcompany.advancedandroid.app.model.User
+import com.obcompany.advancedandroid.utility.Constants
 import com.obcompany.advancedandroid.utility.RxUtil
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,7 +40,13 @@ abstract class NetworkBoundResource<T> {
 
         result.addSource(dbSource){data ->
             result.removeSource(dbSource)
-            execute(dbSource)
+            if(!shouldFetch(data)){
+                execute(dbSource)
+            }else{
+                result.addSource(dbSource) { newData ->
+                    setValue(Resource.success(newData))
+                }
+            }
         }
     }
 
@@ -51,6 +62,7 @@ abstract class NetworkBoundResource<T> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .toFlowable()
+                .doOnComplete { Log.i(Constants.LOG_I, "executeService()") }
         )
     }
 
@@ -59,7 +71,21 @@ abstract class NetworkBoundResource<T> {
             getFromDb()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doFinally{ Log.i(Constants.LOG_I, "executeLoadDb() - doOnComplete") }
         )
+    }
+
+    @SuppressLint("CheckResult")
+    private fun saveData(users: T){
+        val disposable = getSaveData(users)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { Log.i(Constants.LOG_I, "saveData() - Success") },
+                { Log.i(Constants.LOG_I, "saveData() - Error") }
+            )
+
+        notifyDisposable(disposable)
     }
 
     private fun execute(dbSource: LiveData<T>){
@@ -83,16 +109,24 @@ abstract class NetworkBoundResource<T> {
         var isSuccess = false
         when (apiResponse) {
             is ApiSuccessResponse -> {
-                //DEBERIA GUARDAR EN DB
-                setValue(Resource.success(apiResponse.body))
+
+                saveData(apiResponse.body)
+
+                result.addSource(executeLoadDb()){newData ->
+                    setValue(Resource.success(newData))
+                }
                 isSuccess = true
             }
             is ApiEmptyResponse -> {
-                setValue(Resource.error("Error", null))
+                result.addSource(executeLoadDb()){newData ->
+                    setValue(Resource.success(newData))
+                }
                 isSuccess = false
             }
             is ApiErrorResponse -> {
-                setValue(Resource.error("Error", null))
+                result.addSource(executeLoadDb()){newData ->
+                    setValue(Resource.error("Error API",newData))
+                }
                 isSuccess = false
             }
         }
@@ -100,7 +134,7 @@ abstract class NetworkBoundResource<T> {
     }
 
     fun asLiveData() = result as LiveData<Resource<T>>
-    protected open fun processResponse(response: ApiSuccessResponse<T>) = response.body
+    protected abstract fun shouldFetch(data: T?): Boolean
     protected abstract fun notifyDisposable(disposable: Disposable)
 
     /**
@@ -112,5 +146,7 @@ abstract class NetworkBoundResource<T> {
      * Database
      * */
     protected abstract fun getFromDb(): Flowable<T>
+    protected abstract fun getSaveData(users: T): Completable
+
 
 }
