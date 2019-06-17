@@ -3,9 +3,9 @@ package com.obcompany.advancedandroid.repository
 import androidx.lifecycle.LiveData
 import com.obcompany.advancedandroid.app.model.Resource
 import com.obcompany.advancedandroid.app.model.User
-import com.obcompany.advancedandroid.database.AppDatabase
 import com.obcompany.advancedandroid.database.dao.UserDao
-import com.obcompany.advancedandroid.repository.bound.NetworkBoundResource
+import com.obcompany.advancedandroid.repository.bound.DatabaseNetworkBoundResource
+import com.obcompany.advancedandroid.repository.bound.RestNetworkBoundResource
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -13,8 +13,9 @@ import io.reactivex.disposables.Disposable
 import retrofit2.Response
 
 class UserRepository(private val userDao: UserDao): BaseRepository(){
+    //Database + Api
     fun getUsers(): LiveData<Resource<MutableList<User>>>{
-        return object : NetworkBoundResource<MutableList<User>>() {
+        return object : DatabaseNetworkBoundResource<MutableList<User>>() {
             override fun notifyDisposable(disposable: Disposable) {
                 addDisposable(disposable)
             }
@@ -38,4 +39,12 @@ class UserRepository(private val userDao: UserDao): BaseRepository(){
         }.asLiveData()
     }
 
+    //Rest
+    /*fun getUsers(): LiveData<Resource<MutableList<User>>>{
+        return object : RestNetworkBoundResource<MutableList<User>>() {
+            override fun getService(): Single<Response<MutableList<User>>> {
+                return api.getUsers()
+            }
+        }.asLiveData()
+    }*/
 }
