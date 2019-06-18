@@ -17,7 +17,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
     private lateinit var model: MainViewModel
     private lateinit var usersAdapter: UserAdapter
-    private lateinit var emptyView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,14 +35,25 @@ class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
     }
 
     private fun init(){
-        emptyView = layoutInflater.inflate(R.layout.empty_view, content, false)
-        content.addView(emptyView)
-
         subscribeUi()
         model.getUsers()
     }
 
     private fun subscribeUi(){
+        editTextSearch.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val searchedList = model.searchUser(s.toString())
+
+                if(searchedList.count() > 0){
+                    updateData(searchedList)
+                }
+            }
+        })
+
         model.isLoading.observe(this, Observer {
             if(it){
                 loadingDialog.show()
@@ -52,23 +62,13 @@ class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
             }
         })
 
-        model.isEmpty.observe(this, Observer {
-            if(it)
-                emptyView.visibility = View.VISIBLE
-            else
-                emptyView.visibility = View.GONE
-        })
-
         model.users.observe(this, Observer { response ->
             if (!response.isNullOrEmpty() || response.size > 0) {
-                emptyView.visibility = View.GONE
                 usersAdapter = UserAdapter(this, this, response)
                 recyclerViewSearchResults.apply {
                     layoutManager = LinearLayoutManager(this@MainActivity)
                     adapter = usersAdapter
                 }
-            }else{
-                model.isEmpty.value = true
             }
         })
     }

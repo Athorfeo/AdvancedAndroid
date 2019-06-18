@@ -14,7 +14,7 @@ import retrofit2.Response
 
 class UserRepository(private val userDao: UserDao): BaseRepository(){
     //Database + Api
-    fun getUsers(): LiveData<Resource<MutableList<User>>>{
+    /*fun getUsers(): LiveData<Resource<MutableList<User>>>{
         return object : DatabaseNetworkBoundResource<MutableList<User>>() {
             override fun notifyDisposable(disposable: Disposable) {
                 addDisposable(disposable)
@@ -37,14 +37,14 @@ class UserRepository(private val userDao: UserDao): BaseRepository(){
                 return userDao.insertAll(*usersData.toTypedArray())
             }
         }.asLiveData()
-    }
+    }*/
 
     //Rest
-    /*fun getUsers(): LiveData<Resource<MutableList<User>>>{
+    fun getUsers(): LiveData<Resource<MutableList<User>>>{
         return object : RestNetworkBoundResource<MutableList<User>>() {
             override fun getService(): Single<Response<MutableList<User>>> {
                 return api.getUsers()
             }
         }.asLiveData()
-    }*/
+    }
 }

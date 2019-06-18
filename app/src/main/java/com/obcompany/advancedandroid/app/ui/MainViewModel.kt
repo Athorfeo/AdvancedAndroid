@@ -16,7 +16,6 @@ import io.reactivex.schedulers.Schedulers
 
 
 class MainViewModel (private val repository: UserRepository, private val database: AppDatabase) : BaseViewModel(){
-    val isEmpty = MutableLiveData<Boolean>().apply {value = false}
     private val _users = MediatorLiveData<MutableList<User>>()
     val users: LiveData<MutableList<User>> = _users
 
@@ -26,36 +25,6 @@ class MainViewModel (private val repository: UserRepository, private val databas
     }
 
     fun getUsers(){
-        userFetch()
-        //Verificamos si existe registros en la db.
-        /*val disposable = database.userDao().getUsers()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { data ->
-                    if (data.isNotEmpty()) {
-                        _users.removeSource(users)
-                        val mutableLiveData = MutableLiveData<Resource<MutableList<User>>>().apply { value =  Resource.success(data)}
-                        val liveData = mutableLiveData as LiveData<Resource<MutableList<User>>>
-
-                        _users.addSource(liveData){ resource ->
-                            _users.value = resource.data
-                        }
-                    }else{
-                        //Si no hay datos se llama al servicio
-                        userFetch()
-                    }
-                },
-                {
-                    //Si hay error se llama al servicio.
-                   userFetch()
-                }
-            )
-
-        repository.addDisposable(disposable)*/
-    }
-
-    private fun userFetch(){
         _users.removeSource(users)
         val liveData = repository.getUsers()
 
@@ -84,21 +53,16 @@ class MainViewModel (private val repository: UserRepository, private val databas
         }
     }
 
-    private fun saveUsers(){
-        val usersData = users.value as List<User>
-
-        val disposable = database.userDao().insertAll(*usersData.toTypedArray())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    Log.i(Constants.LOG_I, "Insert Ok")
-                },
-                {
-                    Log.i(Constants.LOG_I, "Insert Error")
+    fun searchUser(search: String): MutableList<User>{
+        val searchedList = mutableListOf<User>()
+        users.value?.let{
+            for (user in it){
+                if(user.name.toLowerCase().contains(search.toLowerCase())){
+                    searchedList.add(user)
                 }
-            )
+            }
+        }
 
-        repository.addDisposable(disposable)
+        return searchedList
     }
 }

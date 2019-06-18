@@ -16,6 +16,7 @@ interface API {
     @GET("/users")
     fun getUsers() : Single<Response<MutableList<User>>>
 
+
     companion object {
         fun create(): API{
             val retrofit = Retrofit.Builder()
