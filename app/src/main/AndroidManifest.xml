@@ -17,7 +17,8 @@
             android:usesCleartextTraffic="true"
             tools:ignore="UnusedAttribute">
 
-        <activity android:name=".utility.base.BaseActivity"></activity>
+        <activity android:name=".utility.base.BaseActivity"/>
+        <activity android:name="com.obcompany.advancedandroid.app.ui.post.PostActivity"/>
 
         <activity android:name=".app.ui.MainActivity">
             <intent-filter>

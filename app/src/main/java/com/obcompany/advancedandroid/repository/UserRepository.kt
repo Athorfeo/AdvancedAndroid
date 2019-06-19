@@ -1,6 +1,7 @@
 package com.obcompany.advancedandroid.repository
 
 import androidx.lifecycle.LiveData
+import com.obcompany.advancedandroid.app.model.Post
 import com.obcompany.advancedandroid.app.model.Resource
 import com.obcompany.advancedandroid.app.model.User
 import com.obcompany.advancedandroid.database.dao.UserDao
@@ -44,6 +45,14 @@ class UserRepository(private val userDao: UserDao): BaseRepository(){
         return object : RestNetworkBoundResource<MutableList<User>>() {
             override fun getService(): Single<Response<MutableList<User>>> {
                 return api.getUsers()
+            }
+        }.asLiveData()
+    }
+
+    fun getPosts(userId: Int): LiveData<Resource<MutableList<Post>>>{
+        return object : RestNetworkBoundResource<MutableList<Post>>() {
+            override fun getService(): Single<Response<MutableList<Post>>> {
+                return api.getPosts(userId)
             }
         }.asLiveData()
     }

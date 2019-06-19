@@ -1,5 +1,6 @@
 package com.obcompany.advancedandroid.api
 
+import com.obcompany.advancedandroid.app.model.Post
 import com.obcompany.advancedandroid.app.model.User
 import com.obcompany.advancedandroid.utility.Constants
 import io.reactivex.Flowable
@@ -16,6 +17,8 @@ interface API {
     @GET("/users")
     fun getUsers() : Single<Response<MutableList<User>>>
 
+    @GET("/posts")
+    fun getPosts(@Query("userId") userId: Int) : Single<Response<MutableList<Post>>>
 
     companion object {
         fun create(): API{

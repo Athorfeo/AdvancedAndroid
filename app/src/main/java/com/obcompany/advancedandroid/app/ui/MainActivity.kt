@@ -1,5 +1,6 @@
 package com.obcompany.advancedandroid.app.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obcompany.advancedandroid.R
 import com.obcompany.advancedandroid.app.model.User
+import com.obcompany.advancedandroid.app.ui.post.PostActivity
+import com.obcompany.advancedandroid.utility.Constants
 import com.obcompany.advancedandroid.utility.ViewModelFactoryUtil
 import com.obcompany.advancedandroid.utility.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -29,7 +32,11 @@ class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
     override fun onItemClick(user: User, view: View) {
         when(view.id){
             R.id.btn_view_post -> {
-            }
+                val intent = Intent(this, PostActivity::class.java).apply {
+                    putExtra(Constants.EXTRA_USER, user)
+                }
+                startActivity(intent)
+    }
         }
     }
 
