@@ -10,6 +10,6 @@ object ViewModelFactoryUtil {
     fun provideMainViewModelFactory(context: Context): MainViewModelFactory {
         val database = AppDatabase.getInstance(context)
         val repository = UserRepository(database.userDao())
-        return MainViewModelFactory(repository, database)
+        return MainViewModelFactory(repository)
     }
 }

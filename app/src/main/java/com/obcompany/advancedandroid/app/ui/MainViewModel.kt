@@ -3,19 +3,14 @@ package com.obcompany.advancedandroid.app.ui
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import com.obcompany.advancedandroid.app.model.Resource
 import com.obcompany.advancedandroid.app.model.User
-import com.obcompany.advancedandroid.database.AppDatabase
 import com.obcompany.advancedandroid.repository.UserRepository
-import com.obcompany.advancedandroid.utility.Constants
 import com.obcompany.advancedandroid.utility.Status
 import com.obcompany.advancedandroid.utility.base.BaseViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
 
-class MainViewModel (private val repository: UserRepository, private val database: AppDatabase) : BaseViewModel(){
+class MainViewModel (private val repository: UserRepository) : BaseViewModel(){
     private val _users = MediatorLiveData<MutableList<User>>()
     val users: LiveData<MutableList<User>> = _users
 

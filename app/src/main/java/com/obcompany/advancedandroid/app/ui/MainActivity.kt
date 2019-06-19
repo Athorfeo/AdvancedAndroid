@@ -16,15 +16,14 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
     private lateinit var model: MainViewModel
-    private lateinit var usersAdapter: UserAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         model = ViewModelProviders.of(this, ViewModelFactoryUtil.provideMainViewModelFactory(this)).get(MainViewModel::class.java)
-
-        init()
+        val usersAdapter = UserAdapter(this)
+        init(usersAdapter)
     }
 
     override fun onItemClick(user: User, view: View) {
@@ -34,12 +33,12 @@ class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
         }
     }
 
-    private fun init(){
-        subscribeUi()
+    private fun init(userAdapter: UserAdapter){
+        subscribeUi(userAdapter)
         model.getUsers()
     }
 
-    private fun subscribeUi(){
+    private fun subscribeUi(userAdapter: UserAdapter){
         editTextSearch.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {}
 
@@ -49,7 +48,12 @@ class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
                 val searchedList = model.searchUser(s.toString())
 
                 if(searchedList.count() > 0){
-                    updateData(searchedList)
+                    userAdapter.submitList(searchedList)
+                    recyclerViewSearchResults.visibility = View.VISIBLE
+                    textViewEmptyList.visibility = View.GONE
+                }else{
+                    textViewEmptyList.visibility = View.VISIBLE
+                    recyclerViewSearchResults.visibility = View.GONE
                 }
             }
         })
@@ -64,17 +68,14 @@ class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
 
         model.users.observe(this, Observer { response ->
             if (!response.isNullOrEmpty() || response.size > 0) {
-                usersAdapter = UserAdapter(this, this, response)
+                userAdapter.submitList(response)
                 recyclerViewSearchResults.apply {
                     layoutManager = LinearLayoutManager(this@MainActivity)
-                    adapter = usersAdapter
+                    adapter = userAdapter
+                    visibility = View.VISIBLE
                 }
+                textViewEmptyList.visibility = View.GONE
             }
         })
     }
-
-    private fun updateData(list: MutableList<User>){
-        usersAdapter.updateItems(list)
-    }
-
 }

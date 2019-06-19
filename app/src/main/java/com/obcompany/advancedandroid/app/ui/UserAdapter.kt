@@ -1,6 +1,5 @@
 package com.obcompany.advancedandroid.app.ui
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,20 +8,22 @@ import com.obcompany.advancedandroid.R
 import com.obcompany.advancedandroid.app.model.User
 import kotlinx.android.synthetic.main.user_list_item.view.*
 
-class UserAdapter (private val context: Context, private val onItemClickListener: UserAdapterOnClickListener, var items: MutableList<User>): RecyclerView.Adapter<UserAdapter.ViewHolder>() {
+class UserAdapter (private val onItemClickListener: UserAdapterOnClickListener): RecyclerView.Adapter<UserAdapter.ViewHolder>() {
+    private lateinit var list: MutableList<User>
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(context).inflate(R.layout.user_list_item, parent, false))
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_list_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        items[position].let {
+        list[position].let {
             with(holder){
                 bind(createOnClickListener(it), it)
             }
         }
     }
 
-    override fun getItemCount() = items.size
+    override fun getItemCount() = list.size
 
     private fun createOnClickListener(user: User): View.OnClickListener {
         return View.OnClickListener {
@@ -30,8 +31,8 @@ class UserAdapter (private val context: Context, private val onItemClickListener
         }
     }
 
-    fun updateItems(list: MutableList<User>){
-        items = list
+    fun submitList(list: MutableList<User>){
+        this.list = list
         notifyDataSetChanged()
     }
 
