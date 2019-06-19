@@ -1,6 +1,8 @@
 package com.obcompany.advancedandroid.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.LiveDataReactiveStreams
+import androidx.lifecycle.MediatorLiveData
 import com.obcompany.advancedandroid.app.model.Post
 import com.obcompany.advancedandroid.app.model.Resource
 import com.obcompany.advancedandroid.app.model.User
@@ -10,7 +12,9 @@ import com.obcompany.advancedandroid.repository.bound.RestNetworkBoundResource
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Response
 
 class UserRepository(private val userDao: UserDao): BaseRepository(){
@@ -41,13 +45,13 @@ class UserRepository(private val userDao: UserDao): BaseRepository(){
     }*/
 
     //Rest
-    fun getUsers(): LiveData<Resource<MutableList<User>>>{
+    /*fun getUsers(): LiveData<Resource<MutableList<User>>>{
         return object : RestNetworkBoundResource<MutableList<User>>() {
             override fun getService(): Single<Response<MutableList<User>>> {
                 return api.getUsers()
             }
         }.asLiveData()
-    }
+    }*/
 
     fun getPosts(userId: Int): LiveData<Resource<MutableList<Post>>>{
         return object : RestNetworkBoundResource<MutableList<Post>>() {
@@ -56,4 +60,16 @@ class UserRepository(private val userDao: UserDao): BaseRepository(){
             }
         }.asLiveData()
     }
+
+    fun getUsers(): LiveData<LiveDataResult<Response<MutableList<User>>>>{
+        return api.getUsers()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { LiveDataResult(it, null) }
+            .onErrorReturn { LiveDataResult(null, it) }
+            .toFlowable()
+            .to {LiveDataReactiveStreams.fromPublisher(it) }
+    }
 }
+
+data class LiveDataResult<out T>(val data: T?, val error: Throwable?)
