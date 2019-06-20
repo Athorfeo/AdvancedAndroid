@@ -12,4 +12,9 @@ open class BaseActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         loadingDialog = DialogUtil.progress(this)
     }
+
+    override fun onDestroy() {
+        loadingDialog.dismiss()
+        super.onDestroy()
+    }
 }

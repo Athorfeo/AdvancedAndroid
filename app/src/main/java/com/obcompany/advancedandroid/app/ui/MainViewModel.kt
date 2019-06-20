@@ -6,7 +6,6 @@ import androidx.lifecycle.MediatorLiveData
 import com.obcompany.advancedandroid.app.model.Resource
 import com.obcompany.advancedandroid.app.model.User
 import com.obcompany.advancedandroid.repository.UserRepository
-import com.obcompany.advancedandroid.utility.Constants
 import com.obcompany.advancedandroid.utility.Status
 import com.obcompany.advancedandroid.utility.base.BaseViewModel
 
@@ -25,7 +24,6 @@ class MainViewModel (private val repository: UserRepository) : BaseViewModel(){
         val liveData = repository.getUsers()
 
         _users.addSource(liveData){ data ->
-            Log.v(Constants.LOG_I, "Size of data: ${data.data?.size}")
             processResource(data)
         }
     }
