@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obcompany.advancedandroid.R
 import com.obcompany.advancedandroid.app.model.User
+import com.obcompany.advancedandroid.app.viewmodel.PostViewModelFactory
 import com.obcompany.advancedandroid.utility.Constants
-import com.obcompany.advancedandroid.utility.ViewModelFactoryUtil
 import com.obcompany.advancedandroid.utility.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_post.*
 
@@ -27,7 +27,7 @@ class PostActivity : BaseActivity(){
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
         title = getString(R.string.title_post_activity)
 
-        model = ViewModelProviders.of(this, ViewModelFactoryUtil.providePostViewModelFactory(this)).get(PostViewModel::class.java)
+        model = ViewModelProviders.of(this, PostViewModelFactory.provide(this)).get(PostViewModel::class.java)
         if(intent.extras != null) {
             val user = intent.getSerializableExtra(Constants.EXTRA_USER) as User
             val postAdapter = PostAdapter()

@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.obcompany.advancedandroid.R
 import com.obcompany.advancedandroid.app.model.User
 import com.obcompany.advancedandroid.app.ui.post.PostActivity
+import com.obcompany.advancedandroid.app.viewmodel.MainViewModelFactory
 import com.obcompany.advancedandroid.utility.Constants
-import com.obcompany.advancedandroid.utility.ViewModelFactoryUtil
 import com.obcompany.advancedandroid.utility.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -24,7 +24,7 @@ class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        model = ViewModelProviders.of(this, ViewModelFactoryUtil.provideMainViewModelFactory(this)).get(MainViewModel::class.java)
+        model = ViewModelProviders.of(this, MainViewModelFactory.provide(this)).get(MainViewModel::class.java)
         val usersAdapter = UserAdapter(this)
         init(usersAdapter)
     }
