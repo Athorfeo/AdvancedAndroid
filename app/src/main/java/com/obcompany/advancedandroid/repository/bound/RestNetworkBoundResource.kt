@@ -14,8 +14,7 @@ abstract class RestNetworkBoundResource<T>: NetworkBoundResource<T>() {
     private fun execute() {
         val responseSource = executeService(getService())
 
-        result.addSource(responseSource) { response ->
-            val apiResponse = ApiResponse.create(response)
+        result.addSource(responseSource) { apiResponse ->
             bindData(apiResponse)
         }
     }
@@ -26,10 +25,10 @@ abstract class RestNetworkBoundResource<T>: NetworkBoundResource<T>() {
                 setValue(Resource.success(apiResponse.body))
             }
             is ApiEmptyResponse -> {
-                setValue(Resource.error("Error", null))
+                setValue(Resource.error(null, 204, "La respuesta es vacía."))
             }
             is ApiErrorResponse -> {
-                setValue(Resource.error("Error", null))
+                setValue(Resource.error(null, apiResponse.code, apiResponse.message ?: "Hubo un problema intente nuevamente"))
             }
         }
     }

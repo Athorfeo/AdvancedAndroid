@@ -9,6 +9,7 @@ sealed class ApiResponse<T>{
     companion object {
         fun <T> create(response: Response<T>): ApiResponse<T> {
             Log.i(Constants.LOG_I, "URL: ${response.raw().request().url()}")
+            Log.i(Constants.LOG_I, "CODE: ${response.code()}")
             Log.i(Constants.LOG_I, "MESSAGE: ${response.message()}")
 
             return if (response.isSuccessful) {

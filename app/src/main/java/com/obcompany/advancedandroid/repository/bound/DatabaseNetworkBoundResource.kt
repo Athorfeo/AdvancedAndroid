@@ -11,6 +11,7 @@ import com.obcompany.advancedandroid.api.response.ApiResponse
 import com.obcompany.advancedandroid.api.response.ApiSuccessResponse
 import com.obcompany.advancedandroid.app.model.Resource
 import com.obcompany.advancedandroid.app.model.User
+import com.obcompany.advancedandroid.database.DbResponse
 import com.obcompany.advancedandroid.utility.Constants
 import com.obcompany.advancedandroid.utility.RxUtil
 import io.reactivex.Completable
@@ -25,8 +26,8 @@ import retrofit2.Response
  * NetworkBoundResource
  *
  * Servicio: debe ser de tipo Observable, Flowable o Single.
- * Database[GET]: debe ser de tipo Observable, Flowable o Single.
- * Database[Insert]: debe ser de tipo Completable.
+ * Database - GET: debe ser de tipo Observable, Flowable o Single.
+ * Database - Insert: debe ser de tipo Completable.
  *
  * */
 abstract class DatabaseNetworkBoundResource<T>: NetworkBoundResource<T>(){
@@ -40,24 +41,22 @@ abstract class DatabaseNetworkBoundResource<T>: NetworkBoundResource<T>(){
                 execute(dbSource)
             }else{
                 result.addSource(dbSource) { newData ->
-                    setValue(Resource.success(newData))
+                    setValue(Resource.success(newData.data))
                 }
             }
         }
     }
 
-    private fun execute(dbSource: LiveData<T>){
+    private fun execute(dbSource: LiveData<DbResponse<T>>){
         val responseSource = executeService(getService())
 
         result.addSource(dbSource) { newData ->
-            setValue(Resource.loading(newData))
+            setValue(Resource.loading(newData.data))
         }
 
-        result.addSource(responseSource) { response ->
+        result.addSource(responseSource) { apiResponse ->
             result.removeSource(responseSource)
             result.removeSource(dbSource)
-
-            val apiResponse = ApiResponse.create(response)
             bindData(apiResponse)
         }
 
@@ -69,23 +68,23 @@ abstract class DatabaseNetworkBoundResource<T>: NetworkBoundResource<T>(){
                 notifyDisposable(saveData(getSaveData(apiResponse.body)))
 
                 result.addSource(executeLoadDb(getFromDb())){newData ->
-                    setValue(Resource.success(newData))
+                    setValue(Resource.success(newData.data))
                 }
             }
             is ApiEmptyResponse -> {
                 result.addSource(executeLoadDb(getFromDb())){newData ->
-                    setValue(Resource.success(newData))
+                    setValue(Resource.success(newData.data))
                 }
             }
             is ApiErrorResponse -> {
                 result.addSource(executeLoadDb(getFromDb())){newData ->
-                    setValue(Resource.error("Error API", newData))
+                    setValue(Resource.error(newData.data, apiResponse.code,apiResponse.message ?: "Hubo un problema. Se están mostrando los datos almacenados en el dipositivo"))
                 }
             }
         }
     }
 
-    protected abstract fun shouldFetch(data: T?): Boolean
+    protected abstract fun shouldFetch(data: DbResponse<T>?): Boolean
     protected abstract fun notifyDisposable(disposable: Disposable)
 
     /**

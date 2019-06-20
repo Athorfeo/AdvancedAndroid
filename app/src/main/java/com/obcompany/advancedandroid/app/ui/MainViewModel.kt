@@ -25,8 +25,8 @@ class MainViewModel (private val repository: UserRepository) : BaseViewModel(){
         val liveData = repository.getUsers()
 
         _users.addSource(liveData){ data ->
-            Log.v(Constants.LOG_I, "Valor se cambia: ${data.data?.body()?.size}")
-            //processResource(data)
+            Log.v(Constants.LOG_I, "Size of data: ${data.data?.size}")
+            processResource(data)
         }
     }
 

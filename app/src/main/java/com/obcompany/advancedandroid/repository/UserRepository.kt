@@ -6,6 +6,7 @@ import androidx.lifecycle.MediatorLiveData
 import com.obcompany.advancedandroid.app.model.Post
 import com.obcompany.advancedandroid.app.model.Resource
 import com.obcompany.advancedandroid.app.model.User
+import com.obcompany.advancedandroid.database.DbResponse
 import com.obcompany.advancedandroid.database.dao.UserDao
 import com.obcompany.advancedandroid.repository.bound.DatabaseNetworkBoundResource
 import com.obcompany.advancedandroid.repository.bound.RestNetworkBoundResource
@@ -25,16 +26,16 @@ class UserRepository(private val userDao: UserDao): BaseRepository(){
                 addDisposable(disposable)
             }
 
-            override fun shouldFetch(data: MutableList<User>?): Boolean {
-                return data?.size ?: 0 > 0
-            }
-
-            override fun getFromDb(): Flowable<MutableList<User>> {
-                return userDao.getUsers()
+            override fun shouldFetch(data: DbResponse<MutableList<User>>?): Boolean {
+                return data?.data?.size ?: 0 > 0
             }
 
             override fun getService(): Single<Response<MutableList<User>>> {
                 return api.getUsers()
+            }
+
+            override fun getFromDb(): Flowable<MutableList<User>> {
+                return userDao.getUsers()
             }
 
             override fun getSaveData(users: MutableList<User>): Completable {
@@ -45,13 +46,13 @@ class UserRepository(private val userDao: UserDao): BaseRepository(){
     }*/
 
     //Rest
-    /*fun getUsers(): LiveData<Resource<MutableList<User>>>{
+    fun getUsers(): LiveData<Resource<MutableList<User>>>{
         return object : RestNetworkBoundResource<MutableList<User>>() {
             override fun getService(): Single<Response<MutableList<User>>> {
                 return api.getUsers()
             }
         }.asLiveData()
-    }*/
+    }
 
     fun getPosts(userId: Int): LiveData<Resource<MutableList<Post>>>{
         return object : RestNetworkBoundResource<MutableList<Post>>() {
@@ -60,16 +61,4 @@ class UserRepository(private val userDao: UserDao): BaseRepository(){
             }
         }.asLiveData()
     }
-
-    fun getUsers(): LiveData<LiveDataResult<Response<MutableList<User>>>>{
-        return api.getUsers()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { LiveDataResult(it, null) }
-            .onErrorReturn { LiveDataResult(null, it) }
-            .toFlowable()
-            .to {LiveDataReactiveStreams.fromPublisher(it) }
-    }
 }
-
-data class LiveDataResult<out T>(val data: T?, val error: Throwable?)
