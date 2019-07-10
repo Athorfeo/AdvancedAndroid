@@ -17,8 +17,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Response
+import javax.inject.Inject
 
-class UserRepository(private val userDao: UserDao): BaseRepository(){
+class UserRepository @Inject constructor(private val userDao: UserDao): BaseRepository(){
     //Database + Api
     /*fun getUsers(): LiveData<Resource<MutableList<User>>>{
         return object : DatabaseNetworkBoundResource<MutableList<User>>() {

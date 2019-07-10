@@ -1,6 +1,5 @@
 package com.obcompany.advancedandroid.app.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.obcompany.advancedandroid.app.model.Resource
@@ -8,9 +7,10 @@ import com.obcompany.advancedandroid.app.model.User
 import com.obcompany.advancedandroid.repository.UserRepository
 import com.obcompany.advancedandroid.utility.Status
 import com.obcompany.advancedandroid.utility.base.BaseViewModel
+import javax.inject.Inject
 
 
-class MainViewModel (private val repository: UserRepository) : BaseViewModel(){
+class MainViewModel @Inject constructor(private val repository: UserRepository): BaseViewModel(){
     private val _users = MediatorLiveData<MutableList<User>>()
     val users: LiveData<MutableList<User>> = _users
 

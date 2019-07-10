@@ -3,6 +3,7 @@ package com.obcompany.advancedandroid.utility.base
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.obcompany.advancedandroid.di.AppInjector
 import com.obcompany.advancedandroid.utility.DialogUtil
 
 open class BaseActivity : AppCompatActivity(){

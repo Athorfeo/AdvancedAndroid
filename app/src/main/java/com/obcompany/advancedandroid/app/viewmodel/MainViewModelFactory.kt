@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.obcompany.advancedandroid.app.ui.MainViewModel
 import com.obcompany.advancedandroid.database.AppDatabase
 import com.obcompany.advancedandroid.repository.UserRepository
+import com.obcompany.advancedandroid.utility.InjectionUtil
 
 class MainViewModelFactory(private val repository: UserRepository) : ViewModelProvider.NewInstanceFactory() {
 
@@ -17,8 +18,7 @@ class MainViewModelFactory(private val repository: UserRepository) : ViewModelPr
     companion object{
         @JvmStatic
         fun provide(context: Context): MainViewModelFactory{
-            val database = AppDatabase.getInstance(context)
-            val repository = UserRepository(database.userDao())
+            val repository = InjectionUtil.provideUserRepository(context)
             return MainViewModelFactory(repository)
         }
     }

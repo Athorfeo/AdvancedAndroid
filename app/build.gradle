@@ -33,61 +33,86 @@ android {
         enabled = true
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     productFlavors {
     }
 
     lintOptions {
+        checkAllWarnings true
+        warningsAsErrors true
         abortOnError false
     }
-}
 
+    kapt {
+        generateStubs = true
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xmaxerrs" << "500" // or whatever number you want
+        }
+    }
+}
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
 
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$rootProject.kotlinVersion"
-    implementation 'androidx.core:core-ktx:1.2.0-alpha01'
+    implementation 'androidx.core:core-ktx:1.2.0-alpha02'
 
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'com.google.android.material:material:' + rootProject.materialVersion
-    implementation 'androidx.appcompat:appcompat:' + rootProject.appCompatVersion
-    implementation 'androidx.cardview:cardview:' + rootProject.cardViewVersion
-    implementation 'androidx.recyclerview:recyclerview:' + rootProject.recyclerVersion
-
-    implementation 'androidx.constraintlayout:constraintlayout:' + rootProject.constraintLayoutVersion
+    /* Material */
+    implementation 'com.google.android.material:material:1.1.0-alpha07'
+    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta01'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
 
     // Navigation
-    implementation 'android.arch.navigation:navigation-fragment-ktx:' + rootProject.navigationVersion
-    implementation 'android.arch.navigation:navigation-ui-ktx:' + rootProject.navigationVersion
+    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0'
+    implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0'
 
     //Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-extensions:' + rootProject.lifecycleVersion
-    implementation 'androidx.lifecycle:lifecycle-reactivestreams:' + rootProject.lifecycleVersion
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02'
+    implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0-alpha02'
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.2.0-alpha02'
 
     /* RxJava */
-    implementation 'io.reactivex.rxjava2:rxandroid:' + rootProject.rxAndroidVersion
-    implementation 'io.reactivex.rxjava2:rxjava:' + rootProject.rxJavaVersion
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
 
     /* Retrofit */
-    implementation 'com.squareup.retrofit2:retrofit:' + rootProject.retrofitVersion
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:' + rootProject.retrofitAdapterVersion
-    implementation "com.squareup.retrofit2:converter-gson:" + rootProject.retrofitConverterVersion
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
+    implementation "com.squareup.retrofit2:converter-gson:2.5.0"
 
     /* Glide */
     implementation 'com.github.bumptech.glide:glide:4.9.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    /* annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0' */
+    kapt 'com.github.bumptech.glide:compiler:4.9.0'
 
     // Other
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
     /* Room */
-    implementation 'androidx.room:room-runtime:' + rootProject.roomVersion
-    implementation 'androidx.room:room-ktx:' + rootProject.roomVersion
-    implementation 'androidx.room:room-rxjava2:' + rootProject.roomVersion
-    androidTestImplementation 'androidx.room:room-testing:' + rootProject.roomVersion
-    kapt 'androidx.room:room-compiler:' + rootProject.roomVersion
+    implementation 'androidx.room:room-runtime:2.1.0'
+    implementation 'androidx.room:room-ktx:2.1.0'
+    implementation 'androidx.room:room-rxjava2:2.1.0'
+    androidTestImplementation 'androidx.room:room-testing:2.1.0'
+    kapt 'androidx.room:room-compiler:2.1.0'
+
+    /* Dagger 2 */
+    implementation 'com.google.dagger:dagger:2.15'
+    implementation 'com.google.dagger:dagger-android:2.15'
+    implementation 'com.google.dagger:dagger-android-support:2.15'
+    kapt 'com.google.dagger:dagger-compiler:2.13'
+    kapt 'com.google.dagger:dagger-android-processor:2.15'
 }

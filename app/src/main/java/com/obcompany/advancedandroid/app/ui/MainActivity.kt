@@ -6,25 +6,35 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.obcompany.advancedandroid.R
 import com.obcompany.advancedandroid.app.model.User
 import com.obcompany.advancedandroid.app.ui.post.PostActivity
-import com.obcompany.advancedandroid.app.viewmodel.MainViewModelFactory
+import com.obcompany.advancedandroid.di.AppInjector
 import com.obcompany.advancedandroid.utility.Constants
 import com.obcompany.advancedandroid.utility.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 
 class MainActivity : BaseActivity(), UserAdapter.UserAdapterOnClickListener {
-    private lateinit var model: MainViewModel
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var model: MainViewModel
+
+    /*val model: MainViewModel by lazy {
+        ViewModelProviders.of(this, viewModelFactory)[MainViewModel::class.java]
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        model = ViewModelProviders.of(this, MainViewModelFactory.provide(this)).get(MainViewModel::class.java)
+        AppInjector.init(this)
+        model = ViewModelProviders.of(this, viewModelFactory)[MainViewModel::class.java]
+
         val usersAdapter = UserAdapter(this)
         init(usersAdapter)
     }

@@ -7,6 +7,7 @@ import com.obcompany.advancedandroid.app.ui.MainViewModel
 import com.obcompany.advancedandroid.app.ui.post.PostViewModel
 import com.obcompany.advancedandroid.database.AppDatabase
 import com.obcompany.advancedandroid.repository.UserRepository
+import com.obcompany.advancedandroid.utility.InjectionUtil
 
 class PostViewModelFactory(private val repository: UserRepository) : ViewModelProvider.NewInstanceFactory() {
 
@@ -18,8 +19,7 @@ class PostViewModelFactory(private val repository: UserRepository) : ViewModelPr
     companion object{
         @JvmStatic
         fun provide(context: Context): PostViewModelFactory{
-            val database = AppDatabase.getInstance(context)
-            val repository = UserRepository(database.userDao())
+            val repository = InjectionUtil.provideUserRepository(context)
             return PostViewModelFactory(repository)
         }
     }
